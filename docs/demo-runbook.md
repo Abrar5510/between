@@ -169,7 +169,10 @@ Things to know while it is up:
 
 - [ ] Export the video, upload (YouTube "Unlisted" is fine), title
       **Between — your Alexa negotiates with other families' Alexas**.
-- [ ] Paste the link into the Devpost submission.
+- [ ] Paste the video link into the Devpost submission.
+- [ ] Add the two screenshots (`docs/img/ahmad-kitchen.png`,
+      `docs/img/park-kitchen.png`) to the Devpost image gallery — both were
+      captured through the hosted link, at the settled moment.
 - [ ] Repo links: `github.com/Abrar5510/between` and
       `github.com/Abrar5510/between-protocol`.
 - [ ] **Product Feedback** — mandatory part of this hackathon: fill it in

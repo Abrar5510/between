@@ -31,6 +31,13 @@ Two kitchens, two assistants, one Thursday:
    panel shows what actually crossed the line: seven signed offers, no titles,
    no names, no locations.
 
+Both kitchens at the end of that run — the same moment, two households, captured
+through the hosted link:
+
+| Ahmad's kitchen | Park's kitchen |
+|---|---|
+| ![Ahmad's kitchen: the settled card, the calendar with park covers, and the wire](docs/img/ahmad-kitchen.png) | ![Park's kitchen: the settled card in Park's words and Park's own ledger](docs/img/park-kitchen.png) |
+
 ## How it works
 
 ```
@@ -108,9 +115,10 @@ Ahmad at `/ahmad/…` and Park at `/park/…` behind one tunnel:
 
 The script prints those links and writes them, with ready-made reset commands,
 to `data/hosted-links.txt` — paste that into the Devpost testing instructions.
-ngrok free shows first-time browsers a one-click "Visit Site" page; command-line
-requests are unaffected. A named Cloudflare tunnel on your own domain would skip
-that page entirely.
+Keep that terminal open and the Mac awake while judges test: the demo runs on
+this machine. ngrok free shows first-time browsers a one-click "Visit Site"
+page; command-line requests are unaffected. A named Cloudflare tunnel on your
+own domain would skip that page entirely.
 
 `DEMO_NOW=2026-10-17T09:00:00-07:00` pins "today" so seeds, tests and recordings
 are reproducible. `PACE_MS=1200` slows agent replies so a human can watch.

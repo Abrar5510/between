@@ -1,5 +1,7 @@
 # Between: end-to-end build plan
 
+> **Status note (Oct 17, 2026):** this plan was written Oct 10 and its schedule is now out of date. The current project state and the recovery schedule through the Oct 23 deadline live in [PROJECT_STATUS.md](PROJECT_STATUS.md). The sections below are kept for reference.
+
 Owner tags: **[C]** = Claude does it, **[Y]** = you do it (accounts, secrets, hardware, recording, submitting).
 
 ## Status (updated Oct 10)

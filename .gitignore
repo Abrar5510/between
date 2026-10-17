@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+.env*
+!.env.example
+.DS_Store
+
+# private ideation notes
+hackathon-*.md
+.claude/

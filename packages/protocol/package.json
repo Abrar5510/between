@@ -1,0 +1,15 @@
+{
+  "name": "between-protocol",
+  "version": "0.0.0",
+  "description": "Signed offer protocol for agents that negotiate on behalf of households: strict schema, Ed25519 signing and a bounded-round state machine.",
+  "license": "MIT",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "test": "node --import tsx --test 'test/*.test.ts'",
+    "example": "tsx examples/two-agents.ts"
+  },
+  "dependencies": {
+    "zod": "^4.2.0"
+  }
+}

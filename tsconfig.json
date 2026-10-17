@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "es2024",
+      "dom"
+    ]
+  },
+  "include": [
+    "packages/*/src",
+    "packages/*/test",
+    "packages/*/examples",
+    "src",
+    "web",
+    "test",
+    "scripts",
+    "vite.config.ts"
+  ]
+}

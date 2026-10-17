@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Between</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --ink: #14171f;
+        --muted: #5b6474;
+        --line: #dfe3ea;
+        --owed: #1f7a5a;
+        --owe: #b4532a;
+        font: 18px/1.4 system-ui, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --ink: #f1f3f7;
+          --muted: #a3acbb;
+          --line: #333a47;
+          --owed: #5fd0a6;
+          --owe: #f0a070;
+        }
+      }
+      body {
+        margin: 0;
+        padding: 20px 24px;
+        color: var(--ink);
+        background: transparent;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 1.25rem;
+      }
+      .summary {
+        margin: 0 0 16px;
+        color: var(--muted);
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0;
+        border-top: 1px solid var(--line);
+      }
+      .owed {
+        color: var(--owed);
+      }
+      .owe {
+        color: var(--owe);
+      }
+      .even {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root"></main>
+    <script type="module" src="./app.ts"></script>
+  </body>
+</html>

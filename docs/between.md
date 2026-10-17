@@ -10,7 +10,7 @@ Your Alexa negotiates with other families' Alexas, so you don't have to send the
 
 - **Checked by search (Oct 10):** no shipped consumer product does household-to-household agent negotiation. Only academic simulations exist. A quick search cannot prove absence.
 - **Checked by search:** Alexa+ for Builders supports MCP spec 2025-11-25 and MCP Apps.
-- **Not verified:** whether the Alexa+ client supports the spec's long-running tasks and approval prompts (elicitation), and whether you can connect a self-hosted server to a real device today. These are the day-1 spikes.
+- **Resolved in the build (Oct 17):** a self-hosted server cannot be attached to a real Alexa+ device from here — the developer preview is account-gated and US-only — so every home runs in the simulated Alexa+ page, which the rules allow. The elicitation/tasks question stopped mattering: approval is an ordinary tool call (`respond_to_proposal`) and waiting is polled through `negotiation_status`.
 
 ## The problem
 
@@ -103,22 +103,18 @@ AWS Builder is the alternative if the agents run on AgentCore or Strands. A sing
 
 ## Plan
 
-| Dates | Work |
-|---|---|
-| Oct 10–11 | Spikes: connect a hello-world MCP server to Alexa+; run a two-agent negotiation in the terminal. Start the friction log. |
-| Oct 12–14 | Offer protocol, signing, negotiation engine, tests. |
-| Oct 15–16 | MCP tools, approval flow, ledger. |
-| Oct 17–18 | Proposal card and negotiation feed; simulated second and third homes. |
-| Oct 19 | Extract the library, README, license. Request AWS credits (closes Oct 21, 12:00 PM PT). |
-| Oct 20 | Polish, product feedback answers, friction log. |
-| Oct 21 | Demo video. |
-| Oct 22 | Submit. |
+| Dates | Work | Outcome |
+|---|---|---|
+| Oct 10–11 | Spikes: hello-world MCP server toward Alexa+; a two-agent negotiation in the terminal; friction log started | The Alexa+ developer preview turned out to be account-gated and US-only, so the simulator became the device story — friction log, entries 1–9 |
+| Oct 12–16 | Offer protocol, signing, negotiation engine, tests | Built and tested in one block on Oct 17 |
+| Oct 17 | MCP tools, approval flow, ledger, the app views, the simulated homes, browser verification, the hosted link, public repos | Done the same day: 28 checks green, both repos public, one link live |
+| Oct 18–22 | Product feedback, friction log, video, submission | Feedback text and the friction log are written; the video and the Devpost form are the remaining human steps |
 
 ## Risks
 
 | Risk | Fallback |
 |---|---|
-| Cannot connect a self-hosted server to a real Alexa+ device | Run all three homes in the simulated Alexa+ web app, which the rules allow. |
+| Cannot connect a self-hosted server to a real Alexa+ device | Every household runs in the simulated Alexa+ page, which the rules allow (this is what shipped). |
 | Alexa+ does not support long-running tasks or approval prompts | Poll with `negotiation_status` and ask for approval as a normal turn. |
 | Negotiations loop or produce bad trades | Three-round cap, and the agent may only offer slots its own calendar shows as free. |
 | The demo looks like a scheduling app | Lead with the two-home approval and the offers-only message log. |
@@ -128,7 +124,7 @@ AWS Builder is the alternative if the agents run on AgentCore or Strands. A sing
 1. **Track:** Alexa+.
 2. **Memorable moment:** two Alexas in two homes each asking their family to approve the same deal.
 3. **Avoids the obvious list:** yes. It is multi-turn and multi-party, and it wraps no existing API.
-4. **Buildable by Oct 23:** yes at the scope above, if the day-1 spikes pass.
+4. **Built by Oct 17:** yes at the scope above; the day-1 spikes resolved into the simulator decision.
 5. **Mini challenge without bloat:** yes. The protocol library is code the project needs anyway.
 
 ## Devpost description (final — paste-ready)

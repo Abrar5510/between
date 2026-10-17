@@ -125,6 +125,10 @@ test('two kitchens in a browser: the cards render, the buttons negotiate, the pa
     const ahmadApp = ahmad.frameLocator('#app-view')
     const parkApp = park.frameLocator('#app-view')
 
+    // Both views have finished the app-bridge handshake, so the first card is not raced.
+    await ahmad.locator('#app-view[data-ready]').waitFor({ timeout: 15_000 })
+    await park.locator('#app-view[data-ready]').waitFor({ timeout: 15_000 })
+
     // "I can't take Maya to soccer on Thursday. Can you sort it out?"
     await ahmad.fill('#text', "I can't take Maya to soccer on Thursday. Can you sort it out?")
     await ahmad.press('#text', 'Enter')

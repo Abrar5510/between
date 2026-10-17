@@ -82,8 +82,16 @@ const bridge = new AppBridge(
 bridge.onsizechange = ({ height }) => {
   if (height) iframe.style.height = `${Math.round(height + 26)}px`
 }
+// A turn can finish before the iframe has loaded (a cold or proxied start), and
+// the view drops anything sent before its handshake — so results wait for it.
+// data-ready marks the moment for the browser tests.
+let viewReady: () => void
+const viewInitialized = new Promise<void>(resolve => (viewReady = resolve))
 bridge.oninitialized = () => {
-  void bridge.sendToolInput({ arguments: {} })
+  void bridge.sendToolInput({ arguments: {} }).then(() => {
+    iframe.dataset.ready = 'true'
+    viewReady()
+  })
 }
 bridge.onopenlink = async ({ url }) => {
   window.open(url, '_blank', 'noopener')
@@ -151,11 +159,13 @@ async function runTurn(text: string): Promise<Turn | undefined> {
     addLine('alexa', turn.reply)
     speak(turn.reply)
     for (const call of turn.calls) {
-      void bridge.sendToolResult({
-        content: call.content as CallToolResult['content'],
-        structuredContent: call.structuredContent as Record<string, unknown> | undefined,
-        isError: call.isError,
-      })
+      void viewInitialized.then(() =>
+        bridge.sendToolResult({
+          content: call.content as CallToolResult['content'],
+          structuredContent: call.structuredContent as Record<string, unknown> | undefined,
+          isError: call.isError,
+        }),
+      )
     }
     return turn
   } finally {

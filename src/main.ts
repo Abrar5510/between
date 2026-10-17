@@ -243,7 +243,8 @@ app.get('/sim/app.html', requirePasscode, (_req, res) => {
     res.status(503).type('text/plain').send('The MCP App view is not built yet. Run: npm run build')
     return
   }
-  res.sendFile(appView)
+  // dotfiles: send otherwise 404s when the checkout path has a dot-dir (e.g. .claude/worktrees)
+  res.sendFile(appView, { dotfiles: 'allow' })
 })
 
 app.use(

@@ -27,6 +27,8 @@ code enforces.
 
 ```sh
 npm install between-protocol
+# or, straight from the repository:
+npm install git+https://github.com/Abrar5510/between-protocol.git
 ```
 
 Requires Node 24+ (the package ships TypeScript sources and runs natively under

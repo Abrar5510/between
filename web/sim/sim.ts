@@ -120,10 +120,15 @@ function addLine(who: 'you' | 'alexa', text: string) {
   transcript.scrollTop = transcript.scrollHeight
 }
 
+// The platform default voice is often the robotic one; prefer a natural English voice when installed.
+const NICE_VOICE = /samantha|alex|google us english|microsoft|amazon/i
+
 function speak(text: string) {
   if (!voice.checked || !('speechSynthesis' in window)) return
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.rate = 1.02
+  utterance.voice =
+    window.speechSynthesis.getVoices().find((v) => v.lang.startsWith('en') && NICE_VOICE.test(v.name)) ?? null
   window.speechSynthesis.cancel()
   window.speechSynthesis.speak(utterance)
 }

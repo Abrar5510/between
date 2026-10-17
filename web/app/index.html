@@ -12,6 +12,9 @@
         --line: #dfe3ea;
         --owed: #1f7a5a;
         --owe: #b4532a;
+        --card: #f7f8fa;
+        --btn-bg: #14171f;
+        --btn-fg: #ffffff;
         font: 18px/1.4 system-ui, sans-serif;
       }
       @media (prefers-color-scheme: dark) {
@@ -21,6 +24,9 @@
           --line: #333a47;
           --owed: #5fd0a6;
           --owe: #f0a070;
+          --card: #1b202a;
+          --btn-bg: #f1f3f7;
+          --btn-fg: #14171f;
         }
       }
       body {
@@ -29,25 +35,140 @@
         color: var(--ink);
         background: transparent;
       }
+      .view {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
       h1 {
-        margin: 0 0 4px;
+        margin: 0;
         font-size: 1.25rem;
       }
       .summary {
-        margin: 0 0 16px;
+        margin: 0;
         color: var(--muted);
+      }
+      .lead {
+        font-size: 1.05rem;
+        color: var(--ink);
       }
       ul {
         margin: 0;
         padding: 0;
         list-style: none;
       }
-      li {
+      /* client list under the header, if any (not used today) */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .feed {
+        border-top: 1px solid var(--line);
+      }
+      .feed li {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .feed .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--owed);
+        flex: none;
+        transform: translateY(-1px);
+      }
+      .feed .body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .feed .text {
+        color: var(--muted);
+        font-size: 0.92rem;
+        white-space: pre-wrap;
+      }
+      .feed time {
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .terms {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--card);
+        overflow: hidden;
+      }
+      .term {
         display: flex;
         justify-content: space-between;
         gap: 16px;
-        padding: 12px 0;
+        padding: 12px 16px;
+      }
+      .term + .term {
         border-top: 1px solid var(--line);
+      }
+      .term .label {
+        color: var(--muted);
+      }
+      .why {
+        margin: 0;
+        color: var(--muted);
+        font-style: italic;
+      }
+      .waiting {
+        margin: 0;
+        color: var(--muted);
+      }
+      .buttons {
+        display: flex;
+        gap: 10px;
+      }
+      button {
+        font: inherit;
+        border-radius: 10px;
+        padding: 10px 18px;
+        cursor: pointer;
+      }
+      button.primary {
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+        border: 1px solid var(--btn-bg);
+      }
+      button.ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .done {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .check {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--owed);
+        color: var(--card);
+        font-weight: 700;
       }
       .owed {
         color: var(--owed);
@@ -57,6 +178,15 @@
       }
       .even {
         color: var(--muted);
+      }
+      ul li {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0;
+      }
+      .view > ul li {
+        border-top: 1px solid var(--line);
       }
     </style>
   </head>

@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Between · simulated Alexa+</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0c0f15;
+        --panel: #141924;
+        --line: #252d3c;
+        --ink: #eef1f6;
+        --muted: #97a1b4;
+        --good: #5fd0a6;
+        --warn: #f0a070;
+        --accent: #7aa2ff;
+        font: 15px/1.45 system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 16px;
+        background: var(--bg);
+        color: var(--ink);
+        display: grid;
+        grid-template-columns: minmax(380px, 460px) minmax(0, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+      h1,
+      h2 {
+        margin: 0;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      /* ── the device ── */
+      .device {
+        border: 1px solid var(--line);
+        background: #10141d;
+        border-radius: 22px;
+        padding: 14px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      }
+      .device-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .device-top .ring {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #9fc0ff, #2b6dff 60%, #123a9c);
+        box-shadow: 0 0 12px rgba(90, 140, 255, 0.8);
+      }
+      .device-top .name {
+        font-weight: 600;
+      }
+      .device-top .tag {
+        margin-left: auto;
+        font-size: 0.72rem;
+        color: var(--muted);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+      .screen {
+        width: 100%;
+        height: 300px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel);
+        transition: height 0.18s ease;
+      }
+      .ask {
+        display: flex;
+        gap: 8px;
+      }
+      .orb {
+        width: 46px;
+        height: 46px;
+        flex: none;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: radial-gradient(circle at 32% 30%, #3f5480, #16203a 62%);
+        cursor: pointer;
+      }
+      .orb.listening {
+        background: radial-gradient(circle at 32% 30%, #8fb4ff, #2b6dff 60%);
+        box-shadow: 0 0 0 6px rgba(90, 140, 255, 0.15);
+      }
+      .ask input {
+        flex: 1;
+        font: inherit;
+        color: var(--ink);
+        background: #0d121b;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 12px;
+      }
+      .ask button[type='submit'] {
+        font: inherit;
+        border-radius: 10px;
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #0a0f18;
+        font-weight: 600;
+        padding: 10px 14px;
+        cursor: pointer;
+      }
+      .transcript {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 190px;
+        overflow: auto;
+      }
+      .transcript li {
+        border-left: 2px solid var(--line);
+        padding-left: 10px;
+      }
+      .transcript .who {
+        display: block;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .transcript .you .who {
+        color: var(--accent);
+      }
+      .transcript .alexa .who {
+        color: var(--good);
+      }
+      /* ── panels ── */
+      .panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        min-width: 0;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 14px;
+        min-width: 0;
+      }
+      .panel.wide {
+        grid-column: 1 / -1;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .panel-head .count {
+        margin-left: auto;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .panel ul,
+      .panel ol {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 240px;
+        overflow: auto;
+      }
+      .panel.wide ul,
+      .panel.wide ol {
+        max-height: 300px;
+      }
+      .event {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .when {
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        min-width: 92px;
+      }
+      .what {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .badge {
+        font-size: 0.72rem;
+        border-radius: 999px;
+        padding: 1px 8px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .badge.good {
+        color: var(--good);
+        border-color: color-mix(in srgb, var(--good) 45%, transparent);
+      }
+      .badge.warn {
+        color: var(--warn);
+        border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+      }
+      .ledger-row {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .ledger-row .who {
+        flex: 1;
+      }
+      .ledger-row .ask-first {
+        font-size: 0.72rem;
+        color: var(--good);
+      }
+      .prefs {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .wire-item summary {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        cursor: pointer;
+        list-style: none;
+      }
+      .wire-item summary::-webkit-details-marker {
+        display: none;
+      }
+      .dir {
+        color: var(--accent);
+        font-weight: 700;
+        width: 14px;
+      }
+      .dir.in {
+        color: var(--good);
+      }
+      .wire-item time {
+        margin-left: auto;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        font-size: 0.78rem;
+      }
+      .wire-item pre {
+        margin: 6px 0 2px;
+        padding: 8px 10px;
+        background: #0c1017;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 0.74rem;
+        overflow: auto;
+        max-height: 220px;
+      }
+      .kind {
+        color: var(--muted);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        grid-column: 1 / -1;
+      }
+      .toolbar button,
+      .toolbar label {
+        font: inherit;
+        font-size: 0.82rem;
+        color: var(--muted);
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+      .toolbar .spacer {
+        margin-left: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="device">
+      <div class="device-top">
+        <span class="ring"></span>
+        <span class="name" id="device-name">Alexa+</span>
+        <span class="tag">simulated device</span>
+      </div>
+      <iframe id="app-view" class="screen" src="/sim/app.html" title="Between view"></iframe>
+      <form class="ask" id="ask">
+        <button class="orb" id="mic" type="button" title="Speak" aria-label="Speak"></button>
+        <input id="text" placeholder="Say: I can't take Maya to soccer on Thursday" autocomplete="off" />
+        <button type="submit">Ask</button>
+      </form>
+      <ol class="transcript" id="transcript"></ol>
+    </section>
+
+    <aside class="panels">
+      <div class="toolbar">
+        <h1>Between — household state</h1>
+        <label class="spacer" title="Read the replies aloud"><input type="checkbox" id="voice" checked /> Voice</label>
+        <button id="reset" type="button">Reset rehearsal</button>
+      </div>
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Calendar</h2>
+          <span class="count" id="calendar-count"></span>
+        </div>
+        <ul id="calendar"></ul>
+      </section>
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Favour ledger</h2>
+          <span class="count" id="ledger-count"></span>
+        </div>
+        <ul id="ledger"></ul>
+        <p class="prefs" id="prefs"></p>
+      </section>
+      <section class="panel wide">
+        <div class="panel-head">
+          <h2>Wire — what actually crossed the house line</h2>
+          <span class="count" id="wire-count"></span>
+        </div>
+        <ol id="wire"></ol>
+      </section>
+    </aside>
+
+    <script type="module" src="./sim.ts"></script>
+  </body>
+</html>

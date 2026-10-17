@@ -13,9 +13,9 @@
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present && node --import tsx --test test/mcp.test.ts test/engine.test.ts",
-    "e2e": "node --import tsx --test test/e2e.test.ts",
+    "e2e": "node --import tsx --test test/e2e.test.ts test/sim.test.ts",
     "typecheck": "tsc --noEmit",
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.sim.config.ts",
     "start": "tsx src/main.ts",
     "dev": "tsx scripts/dev.ts"
   },

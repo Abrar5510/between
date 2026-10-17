@@ -1,9 +1,11 @@
 import { timingSafeEqual } from 'node:crypto'
+import { existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import express, { type NextFunction, type Request, type Response } from 'express'
 import { hostHeaderValidation, localhostHostValidation } from '@modelcontextprotocol/express'
 import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node'
 import { chooserFromEnv } from './chooser.ts'
-import { isHouseholdId, nameOf } from './config.ts'
+import { familyOf, isHouseholdId, nameOf } from './config.ts'
 import { Store } from './db.ts'
 import { createClock } from './dates.ts'
 import { createEngine } from './engine.ts'
@@ -11,6 +13,7 @@ import { loadOrCreateKeyPair } from './keys.ts'
 import { createMcpServer } from './mcp.ts'
 import { createPeerTransport } from './peer.ts'
 import { seedStore } from './seed.ts'
+import { createSim } from './sim.ts'
 
 // ── configuration ──────────────────────────────────────────────────────────
 
@@ -197,10 +200,64 @@ app.post('/api/reset', requirePasscode, (_req, res) => {
   res.json({ ok: true })
 })
 
-// The simulated Alexa+ backend lands here on the next work block.
-app.post('/sim/turn', requirePasscode, (_req, res) => {
-  res.status(501).json({ error: 'simulator not built yet' })
+// ── simulated Alexa+ ───────────────────────────────────────────────────────
+
+const sim = createSim({
+  household,
+  port,
+  mcpToken,
+  clock,
+  chooser: process.env.CHOOSER === 'claude' ? 'claude' : 'rules',
+  region: process.env.AWS_REGION,
+  model: process.env.BETWEEN_MODEL,
+  prefs: () => store.listPrefs(),
+  log,
 })
+
+app.get('/sim/config', requirePasscode, (_req, res) => {
+  res.json({ household, name: nameOf(household), family: familyOf(household), appUrl: '/sim/app.html' })
+})
+
+app.post('/sim/turn', requirePasscode, async (req, res) => {
+  const text = typeof req.body?.text === 'string' ? req.body.text.slice(0, 2_000) : ''
+  if (!text.trim()) {
+    res.status(400).json({ error: 'text_required' })
+    return
+  }
+  try {
+    const turn = await sim.runTurn(text)
+    log('sim turn', { said: text, reply: turn.reply, tools: turn.calls.map(c => c.name) })
+    res.json(turn)
+  } catch (error) {
+    log('sim turn failed', { error: String(error) })
+    res.status(502).json({ error: 'sim_unreachable', detail: String(error) })
+  }
+})
+
+const simDist = fileURLToPath(new URL('../dist/sim', import.meta.url))
+const simIndex = fileURLToPath(new URL('../dist/sim/index.html', import.meta.url))
+const appView = fileURLToPath(new URL('../dist/app/index.html', import.meta.url))
+
+app.get('/sim/app.html', requirePasscode, (_req, res) => {
+  if (!existsSync(appView)) {
+    res.status(503).type('text/plain').send('The MCP App view is not built yet. Run: npm run build')
+    return
+  }
+  res.sendFile(appView)
+})
+
+app.use(
+  '/sim',
+  requirePasscode,
+  (_req, res, next) => {
+    if (!existsSync(simIndex)) {
+      res.status(503).type('text/plain').send('The simulator page is not built yet. Run: npm run build')
+      return
+    }
+    next()
+  },
+  express.static(simDist),
+)
 
 // ── timers ─────────────────────────────────────────────────────────────────
 

@@ -58,10 +58,10 @@ What happened in this session: the plan's core build window (file `db.ts` throug
 
 | Item | Owner | When | Notes |
 |---|---|---|---|
-| `Dockerfile` + `docker-compose.yml` | [C] | Sun Oct 18 | Only needed if hosting is docker-based (Fly/EC2). Not needed for the default ngrok hosting |
-| Product Feedback text for the Devpost form | [C] | Sun Oct 18 | Raw material is in `FRICTION_LOG.md`; **mandatory submission item** |
-| Devpost description final pass | [C] | Sun Oct 18 | Draft exists in `docs/between.md` §Devpost description |
-| `git subtree split` for the protocol repo | [C] | After your approval | Local only until you say push |
+| ~~`Dockerfile` + `docker-compose.yml`~~ | done | — | In the repo (one container, four homes). Untested until Docker Desktop is started: `docker compose up --build` |
+| ~~Product Feedback text~~ | done | — | `docs/product-feedback.md` — paste-ready, one block per tool/API/SDK (**mandatory** item covered) |
+| ~~Devpost description final pass~~ | done | — | `docs/between.md` §Devpost description (final — paste-ready); the two repo URLs are the only TODO fields |
+| ~~`git subtree split` for the protocol repo~~ | done | — | Local branch `between-protocol` exists and was verified standalone (10/10 tests + example in a fresh checkout); push awaits your OK |
 | npm publish of `between-protocol@0.1.0` | [Y] + [C] | After `npm login` | Publishing needs your credentials; the command is one line |
 | Bedrock attempt (`CHOOSER=claude`) | [Y] | optional, gate Sun 9 PM | Code is written and type-checked; needs AWS account + model access |
 | Hosting for judges | [Y] + [C] | decision Tue Oct 20 | Default: ngrok from this machine |
@@ -106,10 +106,11 @@ Owner tags: **[C]** = the build agent, **[Y]** = you.
 ### Saturday, Oct 17 — **done ahead of schedule**
 - [x] Protocol, engine, storage, seed, peer transport, MCP surface, app views, simulator, tests, README, runbook, CI, friction log. Gates G2 and (in substance) G3–G4 passed.
 
-### Sunday, Oct 18 — packaging + paperwork
-- [C] `Dockerfile` + `docker-compose.yml` (cheap insurance if hosting decision lands on Fly/EC2).
-- [C] `docs/product-feedback.md` — per-tool/API/SDK feedback, ready to paste into the Devpost form (**mandatory**).
-- [C] Devpost description final pass against what was actually built.
+### Sunday, Oct 18 — now a free buffer day
+- [x] `Dockerfile` + `docker-compose.yml` (done early, Oct 17).
+- [x] `docs/product-feedback.md` — per-tool/API/SDK feedback, ready to paste into the Devpost form (**mandatory**).
+- [x] Devpost description final pass (`docs/between.md`).
+- [x] Protocol split branch prepared and verified standalone.
 - [Y] **Only if you want Bedrock:** AWS account, `brew install awscli`, `aws configure`, enable Claude model access in `us-east-1`, run `CHOOSER=claude npm run dev` once and say "I can't take Maya to soccer on Thursday" — the chooser line should say `claude` instead of `rules`. Report by 9:00 PM local; otherwise we ship rules-only.
 - [Y] Confirm in one line: **publish both repos public + npm publish on Monday** (or say what to hold back).
 
@@ -191,10 +192,11 @@ Owner tags: **[C]** = the build agent, **[Y]** = you.
 
 ## 10. Immediate next actions
 
-1. **[C]** `Dockerfile`, product-feedback draft, Devpost final pass (Sunday block).
-2. **[Y]** One line: publish both repos public + npm publish Monday — yes/no.
+1. **[Y]** One line: publish both repos public + npm publish Monday — yes/no.
+2. **[Y]** `npm login` when convenient (scheduled Monday).
 3. **[Y]** Bedrock: attempt this weekend or skip (default: skip).
-4. **[Y]** Rehearsals Tuesday with `docs/demo-runbook.md`.
+4. **[Y]** A rehearsal with `docs/demo-runbook.md` when you have 15 minutes (Tuesday is the scheduled one).
+5. **[C]** Everything buildable without your accounts is done; the next agent session starts with publish + hosting setup the moment you answer (1)–(3).
 
 ---
 

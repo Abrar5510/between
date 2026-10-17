@@ -104,3 +104,41 @@ Each entry: what I tried, what happened, what I expected, the workaround, and a 
 - **Happened:** the host side (`AppBridge`, `PostMessageTransport`, `sendToolInput` → `sendToolResult` ordering, `oncalltool`) has no README and no runnable example in the package; the constructor's `hostContext` option is only discoverable by reading `app-bridge.d.ts` and the minified `app.js`.
 - **Workaround:** copy the doc comments out of the `.d.ts` into our page — it works exactly as advertised, once you find it.
 - **Suggestion:** ship the `basic-host` example the comments reference as a template directory in the published package.
+
+## Oct 17: verification, browsers and hosting
+
+### 17. Every server-side test was green while the actual page was dead on arrival
+- **Tried:** prove the demo before recording it, not during. Added a real-browser suite that opens both kitchens, waits for the device title and looks for the card.
+- **Happened:** the simulator page never booted. The bundle asked for `/assets/index-….js` while the page was served under `/sim/`, so the script 404'd; with no host script, the bridge handshake never happened, the device title never updated and the panel stayed empty. Meanwhile 26 HTTP-level checks passed, because the page is a client of the server — nothing above the DOM could see it.
+- **Expected:** a page that boots where it is served. The toolkit says nothing about hosting a view or host page under a subpath.
+- **Workaround:** relative asset base (`base: ''`) and an API base derived from `document.baseURI`, so one build serves `/sim/` locally and `/ahmad/sim/` behind the hosted router. The browser suite now fails loudly if this regresses.
+- **Suggestion:** in the MCP Apps guide, say that asset and API paths should be relative or base-anchored; and treat "drive the real UI in CI" as a first-class recipe, not an afterthought.
+
+### 18. Approving a swap made the card forget what was approved
+- **Tried:** press **Yes, agree** on the negotiation card and check the next card state.
+- **Happened:** the card said "Told the Parks yes. Waiting for their family to approve." with no terms — `respond_to_proposal` returned view/summary/status and no proposal object, its `outputSchema` did not list one either, so nothing objected. The family had just agreed to a swap it could no longer see. Same story for the settled card.
+- **Expected:** any result that mentions a proposal carries that proposal.
+- **Workaround:** carry the same wire proposal through every result (`respond_to_proposal` joined `negotiation_status`) and assert the terms in the browser suite.
+- **Suggestion:** document the design rule — build `outputSchema` from what the view must render, not what the tool computes — and warn in development when a view receives a result it cannot fully render.
+
+### 19. A free ngrok account has one reserved domain, and two tunnels claim it without complaint
+- **Tried:** expose both kitchens as two tunnels on the one authenticated ngrok account.
+- **Happened:** both agents started happily and both logs printed `url=https://<the one reserved domain>`. Two processes were serving the same URL for two different local ports — whichever answers first wins, and nothing errors. On the free plan, `--url=random` is read as a custom hostname and rejected (`ERR_NGROK_314: Only paid plans may create endpoints with custom hostnames`).
+- **Expected:** a free random domain for the second tunnel, or at least a refusal that says why.
+- **Workaround:** one tunnel, and a 90-line path router (`scripts/router.ts`) serving Ahmad at `/ahmad/…` and Park at `/park/…`. It also turned out to be the better judge experience: one link, two kitchens.
+- **Suggestion:** refuse the second agent session loudly when the reserved domain is already in use, and document how to request a genuinely random free domain.
+
+### 20. Tunnel providers fail per-network and per-endpoint
+- **Tried:** keep cloudflared quick tunnels as the zero-account fallback behind ngrok.
+- **Happened:** `cloudflared tunnel --url …` dies with `failed to request quick Tunnel: Post "https://api.trycloudflare.com/tunnel": context deadline exceeded`, while the machine's own *named* cloudflared tunnel (different endpoints) runs fine. Same network, same binary, different API host.
+- **Expected:** quick tunnels to work wherever the named tunnel does.
+- **Workaround:** ngrok (already authenticated here) as the default; documented the named-Cloudflare-hostname route as the upgrade.
+- **Suggestion:** surface a clear diagnostic when the quick-tunnel API host is unreachable, so the failure reads as "this network blocks it" instead of "cloudflared is broken".
+
+### 21. The runbook described a screen that does not exist
+- **Tried:** assert the reset state in the browser suite — one event, no badges — and compare it to the recording runbook's pre-flight checklist.
+- **Happened:** the checklist told the reader to look for a **tradable** badge on Ahmad's Thursday soccer slot. The seed gives Ahmad the *need* (kind `activity`, not tradeable); there is no badge. Park's and Chen's slots are the tradeable ones. The runbook had been written from the seed's intent rather than from the rendered truth.
+- **Expected:** docs that match the pixels, since a human follows them under time pressure.
+- **Workaround:** fixed the checklist; the browser suite now asserts the reset state, so the pixels and the docs have one source of truth.
+- **Suggestion:** for demo-driven projects, assert the narrated UI state in a test — a runbook is a test written in prose, and prose does not fail CI.
+

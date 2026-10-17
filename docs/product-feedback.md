@@ -125,6 +125,18 @@ both sides of the handshake.
 - The app-side and host-side stories are asymmetric: the app side has clear
   examples; the side that hosts the app (which every tool vendor will build
   next) does not.
+- **Nothing connects the view's needs to the tool's `outputSchema`, and a
+  mismatch fails silently.** Our `respond_to_proposal` returned view/summary/
+  status — and no proposal object. Its schema was valid, the tool worked, the
+  tests passed; the card simply rendered without the terms the family had just
+  agreed to, and only a real browser driving the real card caught it. For a
+  toolkit whose whole pitch is "the tool result is the UI", that is the failure
+  mode worth guarding.
+- **Path-prefix hosting is invisible in the docs.** An MCP App view and its
+  host page must survive being served under a subpath (a tunnel, a gateway, a
+  per-tenant route). Ours did not: the built page asked for `/assets/…` while
+  being served under `/sim/`, and the page was dead on arrival with every
+  server-side test green.
 
 **Suggestions**
 
@@ -132,6 +144,11 @@ both sides of the handshake.
    template directory inside the npm package.
 2. One README section "Writing a host in 30 lines", with the exact transport
    arguments and the initialize → tool input → tool result sequence.
+3. Add a "designing the result" note: build `outputSchema` from what the view
+   must render, not from what the tool computes, and warn in development when a
+   view receives a result it cannot fully render.
+4. Say in the MCP Apps guide that asset and API paths should be relative (or
+   base-anchored) so a view works locally and behind a subpath.
 
 ---
 

@@ -182,14 +182,14 @@ device would; the honest table is in the README.
 **Open source.** MIT. Two public repositories:
 
 - **Main project** — the household server, the MCP tools, the app, the
-  simulator: `TODO github.com/Abrar5510/between`
+  simulator: [github.com/Abrar5510/between](https://github.com/Abrar5510/between)
 - **The protocol, on its own** — `between-protocol` on npm, with `SPEC.md`,
-  a generated JSON Schema and tests: `TODO github.com/Abrar5510/between-protocol`
+  a generated JSON Schema and tests: [github.com/Abrar5510/between-protocol](https://github.com/Abrar5510/between-protocol)
 
 **Built with.** Node 24 (TypeScript, no build step for the server), MCP SDK
 (server/client/express/node), `@modelcontextprotocol/ext-apps` (App +
 AppBridge), Express, SQLite via `node:sqlite`, Zod, Vite, Ed25519 via
-`node:crypto`; Claude on Amazon Bedrock as an optional chooser; 26 tests across
-protocol, engine, MCP surface, failure drills, four-server end-to-end and the
-full spoken demo.
+`node:crypto`; Claude on Amazon Bedrock as an optional chooser; 28 checks across
+protocol, engine, MCP surface, failure drills, four-server end-to-end, the full
+spoken demo, and two real-browser suites driving both kitchens.
 

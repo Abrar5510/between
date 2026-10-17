@@ -75,8 +75,12 @@ Requirements: Node 24+, npm. No account, keys or cloud needed.
 ```sh
 npm install
 npm run build      # builds the MCP App view and the simulator page
-npm test           # protocol + engine + MCP surface
+npm test           # protocol + engine + MCP surface + failure drills
 npm run e2e        # four real servers, signed offers over HTTP, full scenario
+
+npx playwright install chromium   # once, for the browser suites
+npm run ui         # both kitchens in a real browser: cards, buttons, panels
+npm run hosted     # the same pages, served the way judges get them (path prefixes)
 
 npm run dev        # starts ahmad (4001), park (4002), lee (4003), chen (4004)
 npm run host       # dev + one public ngrok link for judges, both kitchens behind it

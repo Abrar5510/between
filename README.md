@@ -28,8 +28,8 @@ Two kitchens, two assistants, one Thursday:
    take Tuesday.* Each family taps yes, by voice or on the card. Nobody has
    accepted anything until both have.
 4. **Settle.** Both calendars move, both ledgers move to net zero, and the wire
-   panel shows what actually crossed the line: seven signed offers, no titles,
-   no names, no locations.
+   panel shows every message that actually crossed the line: signed offers and
+   answers, no titles, no names, no locations.
 
 Both kitchens at the end of that run — the same moment, two households, captured
 through the hosted link:

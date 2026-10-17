@@ -105,7 +105,7 @@ A script that fits the beats above, ~2:40 at a calm pace:
 >
 > **[0:50]** The Lees are busy — their assistant declines, and nothing about
 > their day leaves their house. The Parks counter: they'll take Thursday if
-> Ahmad takes their Tuesday run. The Chen's offer a plain favour; Between ranks
+> Ahmad takes their Tuesday run. The Chens offer a plain favour; Between ranks
 > the offers by who owes whom, so the Ahmads' own ledger does the choosing.
 >
 > **[1:25]** One card, one question: *they take Thursday, you take Tuesday.*
@@ -120,6 +120,29 @@ A script that fits the beats above, ~2:40 at a calm pace:
 >
 > **[2:20]** Between: four MCP tools, one signed protocol, and two assistants
 > that finally do the boring part of being a parent.
+
+### Paste-ready upload text
+
+**Title:** Between — your Alexa negotiates with other families' Alexas
+
+**Description:**
+
+```
+Two households, two assistants, one Thursday. Ahmad asks once — "I can't take
+Maya to soccer on Thursday. Can you sort it out?" — and his assistant
+negotiates with the families he trusts over a signed, offers-only protocol.
+The Lees decline and nothing about their day leaves their house; the Parks
+counter with a swap; the Ahmads' own favour ledger decides who is asked first.
+Nothing is committed until both families say yes out loud.
+
+Built for the Build, Ship, Shape hackathon (Alexa+ track). Real MCP server with
+four tools and a real MCP App view; the Alexa+ device is simulated in a web page
+because the developer preview is account-gated. The negotiation protocol is a
+standalone, tested package.
+
+Code: https://github.com/Abrar5510/between
+Protocol: https://github.com/Abrar5510/between-protocol
+```
 
 ## 4. When something goes wrong
 

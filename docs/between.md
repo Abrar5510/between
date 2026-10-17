@@ -179,8 +179,9 @@ device would; the honest table is in the README.
 
 - **Main project** — the household server, the MCP tools, the app, the
   simulator: [github.com/Abrar5510/between](https://github.com/Abrar5510/between)
-- **The protocol, on its own** — `between-protocol` on npm, with `SPEC.md`,
-  a generated JSON Schema and tests: [github.com/Abrar5510/between-protocol](https://github.com/Abrar5510/between-protocol)
+- **The protocol, on its own** — the same package as a standalone repository,
+  with `SPEC.md`, a generated JSON Schema, its own CI and its own tag:
+  [github.com/Abrar5510/between-protocol](https://github.com/Abrar5510/between-protocol)
 
 **Built with.** Node 24 (TypeScript, no build step for the server), MCP SDK
 (server/client/express/node), `@modelcontextprotocol/ext-apps` (App +

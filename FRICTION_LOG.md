@@ -72,3 +72,35 @@ Each entry: what I tried, what happened, what I expected, the workaround, and a 
 - **Tried:** render our view before touching Alexa+.
 - **Happened:** `npx @modelcontextprotocol/inspector@2.10.1` has an Apps tab with a sandbox. It listed the tool, called it and rendered the card with no changes on our side.
 - **Suggestion:** link it from "Test Your MCP Add-ons", which mentions a "standard MCP Inspector" without saying where to get it or that it renders MCP Apps.
+
+## Oct 17: the core build
+
+### 12. The MCP Express helper cannot verify signed request bodies
+- **Tried:** mount the MCP server with the framework helper `createMcpExpressApp` from `@modelcontextprotocol/express`.
+- **Happened:** the household-to-household endpoint verifies an Ed25519 signature over the *raw* request bytes, and the helper owns the body parser — there is no hook to keep the raw body.
+- **Workaround:** build a plain `express()` app, mount `NodeStreamableHTTPServerTransport` on `/mcp` by hand, and use `express.json({ verify })` to capture the raw buffer on `/peer/offers`.
+- **Suggestion:** let the helper take `express.json` options, or export a raw-body variant for signature-verifying servers.
+
+### 13. macOS case-insensitive volumes break `tsc` on npm workspaces
+- **Tried:** import the workspace package (`between-protocol`) from the server code on an external volume mounted at both `/Volumes/Transend` and `/volumes/transend`.
+- **Happened:** `tsc` failed with TS1149 — "File name ... differs from already included file name ... only in casing" — because the include pattern and the workspace symlink resolve the *same* file under two spellings.
+- **Workaround:** `forceConsistentCasingInFileNames: false`, which treats the two spellings as one file.
+- **Suggestion:** the error message should name the mount/workspace-symlink cause, not just the two spellings.
+
+### 14. Bedrock's typed `effort` parameter is one level deeper than expected
+- **Tried:** pass `effort: 'low'` on `messages.create` with `@anthropic-ai/bedrock-sdk`.
+- **Happened:** the compiler returned "No overload matches this call" with no hint; `effort` lives in `output_config.effort`, which is only visible in the type definitions.
+- **Workaround:** read the type definitions and move the field.
+- **Suggestion:** mention `output_config.effort` in the Bedrock quickstart next to `model` and `max_tokens`.
+
+### 15. A hackathon that rewards Bedrock, with no Bedrock inside 48 hours
+- **Tried:** get an Anthropic-on-Bedrock model running for the demo's agent chooser, a centrepiece of the event's judging criteria.
+- **Happened:** a new AWS account must be created, card-verified and region-model-enabled by hand; the hackathon's own AWS-credits form closes **two days before** the submission deadline. Support spins up a multi-day manual approval path. The result: the one required cloud dependency cannot be switched on inside the hackathon window.
+- **Workaround:** ship the feature behind `CHOOSER=claude` with a deterministic rules chooser as the default, and treat Bedrock as a demo-day upgrade. The code path is written and type-checked; the credential is not.
+- **Suggestion:** for a timed hackathon, hand out scoped sandbox keys at registration with the exact model allow-listed, or put the credit form deadline after the submission deadline.
+
+### 16. `@modelcontextprotocol/ext-apps` host bridge is learnable only from `.d.ts` examples
+- **Tried:** host the MCP App view inside our own simulator page, as a real Alexa+ would.
+- **Happened:** the host side (`AppBridge`, `PostMessageTransport`, `sendToolInput` → `sendToolResult` ordering, `oncalltool`) has no README and no runnable example in the package; the constructor's `hostContext` option is only discoverable by reading `app-bridge.d.ts` and the minified `app.js`.
+- **Workaround:** copy the doc comments out of the `.d.ts` into our page — it works exactly as advertised, once you find it.
+- **Suggestion:** ship the `basic-host` example the comments reference as a template directory in the published package.

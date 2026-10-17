@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests (protocol, engine, MCP surface)
+        run: npm test
+
+      - name: Build the app view and the simulator page
+        run: npm run build
+
+      - name: End-to-end (four servers, signed offers, the demo scenario)
+        run: npm run e2e

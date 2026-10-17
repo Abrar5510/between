@@ -12,9 +12,10 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm test --workspaces --if-present && node --import tsx --test test/mcp.test.ts test/engine.test.ts",
+    "test": "npm test --workspaces --if-present && node --import tsx --test test/mcp.test.ts test/engine.test.ts test/drills.test.ts",
     "e2e": "node --import tsx --test test/e2e.test.ts test/sim.test.ts",
     "typecheck": "tsc --noEmit",
+    "schema:protocol": "tsx scripts/emit-protocol-schema.ts",
     "build": "vite build && vite build --config vite.sim.config.ts",
     "start": "tsx src/main.ts",
     "dev": "tsx scripts/dev.ts"

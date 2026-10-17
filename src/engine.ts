@@ -270,10 +270,13 @@ export function createEngine(deps: EngineDeps) {
       return { ...base, kind: 'declined', summary: `No deal for the ${task} on ${when ? weekdayName(when) : 'that day'}. Say the word and I'll try again.` }
     }
 
+    const lapsed = store.threadsForNegotiation(n.id).some(t => t.state.status === 'expired')
     return {
       ...base,
       kind: 'no_help',
-      summary: `Nobody could take the ${task}${when ? ` on ${weekdayName(when)}` : ''}. I can try again closer to the day.`,
+      summary: lapsed
+        ? `The deal for the ${task}${when ? ` on ${weekdayName(when)}` : ''} lapsed before both families said yes. Say the word and I'll ask again.`
+        : `Nobody could take the ${task}${when ? ` on ${weekdayName(when)}` : ''}. I can try again closer to the day.`,
     }
   }
 
@@ -486,7 +489,14 @@ export function createEngine(deps: EngineDeps) {
 
   async function settle(nid: string, final: boolean): Promise<void> {
     const n = store.getNegotiation(nid)
-    if (!n || n.status !== 'negotiating') return
+    if (!n) return
+    if (n.status === 'agreed' || n.status === 'declined' || n.status === 'no_help_found') return
+    // A ready proposal — or a deal waiting on the other family — whose own
+    // thread is still live is already the answer; nothing to re-settle.
+    if (n.chosen_thread) {
+      const chosen = store.getThread(n.chosen_thread)
+      if (chosen && (chosen.state.status === 'open' || chosen.state.status === 'half_accepted')) return
+    }
     const threads = store.threadsForNegotiation(nid)
     const candidates: ThreadRow[] = []
     let pending = false

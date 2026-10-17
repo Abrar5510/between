@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -30,3 +30,6 @@ jobs:
 
       - name: End-to-end (four servers, signed offers, the demo scenario)
         run: npm run e2e
+
+      - name: Browser check (two kitchens, the real cards, the buttons)
+        run: npx playwright install --with-deps chromium && npm run ui && npm run hosted

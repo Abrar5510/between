@@ -49,8 +49,10 @@ Window setup:
 
 **Before every take**, click **Reset rehearsal** in both windows and confirm:
 
-- Ahmad's calendar shows *soccer run · Thu 4:00 PM* with the **tradable** badge.
-- Park's calendar shows *soccer run · Tue 4:00 PM* with the **tradable** badge.
+- Ahmad's calendar shows one event, *soccer run · Thu 4:00 PM* — the slot that
+  needs covering, so no badge on it.
+- Park's calendar shows *soccer run · Tue 4:00 PM* with the **tradable** badge
+  (that is what Park will put on the table).
 - Ahmad's ledger reads *Lee owe you 2 · Park even · Chen even* plus the
   preferences line.
 - The wire panel is empty.
@@ -131,7 +133,39 @@ A script that fits the beats above, ~2:40 at a calm pace:
 | Proposal card shows "Waiting for the other family." on both | One side hasn't approved; say *"What's the news?"* to re-read the state. |
 | You want the old state back mid-session | `curl -X POST http://127.0.0.1:4001/api/reset` (same for 4002–4004). |
 
-## 5. After the take — submission checklist
+## 5. Host it for judges — one link, both kitchens
+
+```sh
+npm run host          # dev servers + router + ngrok, in one terminal
+```
+
+The script prints (and writes to `data/hosted-links.txt`) the testing notes:
+
+- `https://<your-ngrok-domain>/ahmad/sim/` — Ahmad's kitchen
+- `https://<your-ngrok-domain>/park/sim/` — Park's kitchen
+
+Both pages sit behind the one ngrok link: `scripts/router.ts` gives each
+household a path, because a free ngrok account has a single reserved domain and
+a second tunnel would steal it from the first. Verified end to end on
+2026-10-17: both kitchens loaded through ngrok and settled the swap, and the
+`curl` reset lines in the notes work as written.
+
+Things to know while it is up:
+
+- Keep the terminal open and the Mac awake (Judges test whenever; the demo
+  lives on this machine).
+- The first browser visit shows ngrok's **"You are about to visit …"** page —
+  one click on **Visit Site**, remembered per browser afterwards.
+- `curl` and other command-line requests are not affected by that page.
+- The state judges see is whatever the last session left; the reset commands in
+  the notes put both households back to the seeded morning.
+- Reset it yourself before sharing the link, so the first judge gets the clean
+  morning.
+- Better URL, no interstitial: your machine already runs a named Cloudflare
+  tunnel; add a public hostname for `http://127.0.0.1:4100` in the Cloudflare
+  dashboard and that domain can replace the ngrok link in the notes.
+
+## 6. After the take — submission checklist
 
 - [ ] Export the video, upload (YouTube "Unlisted" is fine), title
       **Between — your Alexa negotiates with other families' Alexas**.

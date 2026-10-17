@@ -79,6 +79,7 @@ npm test           # protocol + engine + MCP surface
 npm run e2e        # four real servers, signed offers over HTTP, full scenario
 
 npm run dev        # starts ahmad (4001), park (4002), lee (4003), chen (4004)
+npm run host       # dev + one public ngrok link for judges, both kitchens behind it
 ```
 
 Then open the simulated Alexa+ for the Ahmads:
@@ -90,6 +91,22 @@ Say or type: *"I can't take Maya to soccer on Thursday"* in one window; watch
 the other window speak up when the proposal lands. Each page carries the
 side panels the demo narrates: the household calendar, the favour ledger, and
 the raw wire — every message on the wire is a schema-valid signed offer.
+
+### One link, both kitchens
+
+`npm run host` puts the same demo on one public URL. A free ngrok account has a
+single reserved domain and every tunnel grabs it, so the second kitchen would
+fight the first over it; instead [`scripts/router.ts`](scripts/router.ts) serves
+Ahmad at `/ahmad/…` and Park at `/park/…` behind one tunnel:
+
+- `https://<your-domain>/ahmad/sim/` — Ahmad's kitchen
+- `https://<your-domain>/park/sim/` — Park's kitchen
+
+The script prints those links and writes them, with ready-made reset commands,
+to `data/hosted-links.txt` — paste that into the Devpost testing instructions.
+ngrok free shows first-time browsers a one-click "Visit Site" page; command-line
+requests are unaffected. A named Cloudflare tunnel on your own domain would skip
+that page entirely.
 
 `DEMO_NOW=2026-10-17T09:00:00-07:00` pins "today" so seeds, tests and recordings
 are reproducible. `PACE_MS=1200` slows agent replies so a human can watch.
@@ -115,7 +132,10 @@ web/app/                the MCP App view (feed, proposal, settled, ledger)
 web/sim/                the simulated Alexa+ page (device, transcript, panels)
 packages/protocol/      between-protocol: schema, signing, threads — README + SPEC
 scripts/dev.ts          runs the four local families
+scripts/host.ts         dev + ngrok + the front door, for judges
+scripts/router.ts       one public URL, one path per kitchen
 test/                   protocol, engine, MCP surface, four-server e2e, simulator
+                        (test/ui.test.ts and test/hosted.test.ts drive real browsers)
 docs/between.md         product spec and demo script
 ```
 

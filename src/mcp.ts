@@ -38,6 +38,11 @@ const Proposal = z.object({
   why: z.string().nullable(),
 })
 
+/** The one proposal shape the view renders, camelCase inside, snake_case out. */
+function wireProposal(p: { proposalId: string; theyTake: string; youTake: string; why?: string | null }) {
+  return { proposal_id: p.proposalId, they_take: p.theyTake, you_take: p.youTake, why: p.why ?? null }
+}
+
 const View = z.enum(['feed', 'proposal', 'agreed', 'ledger'])
 
 const FindHelpResult = z.object({
@@ -66,6 +71,7 @@ const RespondResult = z.object({
   summary: z.string().describe('One or two plain sentences that can be spoken as they are.'),
   status: z.string().optional(),
   negotiation_id: z.string().optional(),
+  proposal: Proposal.optional(),
 })
 
 const LedgerResult = z.object({
@@ -145,16 +151,7 @@ export function createMcpServer(engine: Engine): McpServer {
         ...(result.negotiationId ? { negotiation_id: result.negotiationId } : {}),
         ...(result.task ? { task: result.task } : {}),
         ...(result.when ? { when: result.when } : {}),
-        ...(result.proposal
-          ? {
-              proposal: {
-                proposal_id: result.proposal.proposalId,
-                they_take: result.proposal.theyTake,
-                you_take: result.proposal.youTake,
-                why: result.proposal.why ?? null,
-              },
-            }
-          : {}),
+        ...(result.proposal ? { proposal: wireProposal(result.proposal) } : {}),
         feed: result.feed,
       }
       return { content: [{ type: 'text' as const, text: result.summary }], structuredContent }
@@ -185,6 +182,7 @@ export function createMcpServer(engine: Engine): McpServer {
         summary: result.summary,
         ...(result.status ? { status: result.status } : {}),
         ...(result.negotiationId ? { negotiation_id: result.negotiationId } : {}),
+        ...(result.proposal ? { proposal: wireProposal(result.proposal) } : {}),
       }
       return { content: [{ type: 'text' as const, text: result.summary }], structuredContent }
     },

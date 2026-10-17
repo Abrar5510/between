@@ -72,6 +72,7 @@ export interface RespondResult {
   summary: string
   negotiationId?: string
   status?: string
+  proposal?: ProposalView
 }
 
 export interface LedgerResult {
@@ -700,11 +701,19 @@ export function createEngine(deps: EngineDeps) {
             void Promise.resolve(send(dec, other.id))
           }
           store.setNegotiation(n.id, { status: 'awaiting_other_family' })
+          const standing = chosen.state.standing
+          const give = standing.type === 'counter' ? standing.give : null
           return {
             kind: 'awaiting',
             negotiationId: n.id,
             status: 'awaiting_other_family',
             summary: `Told ${fam} yes. Waiting for their family to approve.`,
+            proposal: {
+              proposalId: n.id,
+              theyTake: slotLabel(standing.ask),
+              youTake: give ? slotLabel(give) : "nothing — they're helping",
+              why: n.why,
+            },
           }
         }
         for (const other of store.threadsForNegotiation(n.id)) {
@@ -717,7 +726,13 @@ export function createEngine(deps: EngineDeps) {
         return { kind: 'declined', negotiationId: n.id, status: 'declined', summary: `Okay — I turned ${fam.split(' ')[1] ?? fam} down. Nothing changes in the calendar.` }
       }
       const view = buildStatus(n)
-      return { kind: view.kind === 'agreed' ? 'agreed' : view.kind === 'none' ? 'none' : 'negotiating', summary: view.summary, negotiationId: n.id, status: n.status }
+      return {
+        kind: view.kind === 'agreed' ? 'agreed' : view.kind === 'none' ? 'none' : 'negotiating',
+        summary: view.summary,
+        negotiationId: n.id,
+        status: n.status,
+        proposal: view.proposal,
+      }
     }
 
     const thread = t!
@@ -732,7 +747,18 @@ export function createEngine(deps: EngineDeps) {
         const summary = give
           ? `Done. You're taking the ${s.ask.task} on ${dayTime(s.ask.when)}, and ${fam} are taking your ${give.task} on ${dayTime(give.when)}.`
           : `Done. You're covering the ${s.ask.task} on ${dayTime(s.ask.when)}. They owe you one.`
-        return { kind: 'agreed', negotiationId: thread.id, status: 'agreed', summary }
+        return {
+          kind: 'agreed',
+          negotiationId: thread.id,
+          status: 'agreed',
+          summary,
+          proposal: {
+            proposalId: thread.id,
+            theyTake: give ? slotLabel(give) : "nothing — they're just helping",
+            youTake: slotLabel(s.ask),
+            why: (thread.meta.why as string | undefined) ?? null,
+          },
+        }
       }
       const dec = makeDraft({ thread: thread.id, from: self, to: thread.peer, type: 'decline' })
       await advance(thread.id, dec)
@@ -740,7 +766,13 @@ export function createEngine(deps: EngineDeps) {
       return { kind: 'declined', negotiationId: thread.id, status: 'declined', summary: `Told ${fam} no.` }
     }
     const view = buildThreadStatus(thread)
-    return { kind: view.kind === 'agreed' ? 'agreed' : 'negotiating', summary: view.summary, negotiationId: thread.id, status: thread.state.status }
+    return {
+      kind: view.kind === 'agreed' ? 'agreed' : 'negotiating',
+      summary: view.summary,
+      negotiationId: thread.id,
+      status: thread.state.status,
+      proposal: view.proposal,
+    }
   }
 
   async function onMessage(offer: Offer): Promise<void> {

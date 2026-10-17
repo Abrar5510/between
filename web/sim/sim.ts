@@ -44,6 +44,13 @@ type State = {
 
 const $ = (id: string) => document.getElementById(id)!
 
+/**
+ * The page lives at <base>sim/ — /sim/ when the household serves it directly,
+ * /ahmad/sim/ or /park/sim/ behind the hosted router — so every request is
+ * anchored to that base and one build serves both.
+ */
+const BASE = new URL('.', document.baseURI).pathname.replace(/sim\/$/, '')
+
 const iframe = $('app-view') as HTMLIFrameElement
 const transcript = $('transcript')
 const input = $('text') as HTMLInputElement
@@ -126,7 +133,7 @@ async function runTurn(text: string): Promise<Turn | undefined> {
   busy = true
   try {
     if (text !== '__auto__') addLine('you', text)
-    const res = await fetch('/sim/turn', {
+    const res = await fetch(`${BASE}sim/turn`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ text }),
@@ -275,7 +282,7 @@ function renderWire(state: State) {
 
 async function poll() {
   try {
-    const res = await fetch('/api/state')
+    const res = await fetch(`${BASE}api/state`)
     if (!res.ok) return
     const state = (await res.json()) as State
     renderCalendar(state)
@@ -298,7 +305,7 @@ setInterval(() => void poll(), 1_000)
 void poll()
 
 $('reset').addEventListener('click', async () => {
-  await fetch('/api/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
+  await fetch(`${BASE}api/reset`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })
   announced.clear()
   transcript.replaceChildren()
   await poll()

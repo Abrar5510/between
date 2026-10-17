@@ -12,11 +12,12 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm test --workspaces --if-present && node --import tsx --test 'test/*.test.ts'",
+    "test": "npm test --workspaces --if-present && node --import tsx --test test/mcp.test.ts test/engine.test.ts",
+    "e2e": "node --import tsx --test test/e2e.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "vite build",
     "start": "tsx src/main.ts",
-    "dev": "tsx watch src/main.ts"
+    "dev": "tsx scripts/dev.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
@@ -27,6 +28,7 @@
     "vite-plugin-singlefile": "^2.3.3"
   },
   "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.35.0",
     "@modelcontextprotocol/client": "^2.3.1",
     "@modelcontextprotocol/express": "^2.0.2",
     "@modelcontextprotocol/ext-apps": "^2.0.3",

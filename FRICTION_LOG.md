@@ -142,3 +142,10 @@ Each entry: what I tried, what happened, what I expected, the workaround, and a 
 - **Workaround:** fixed the checklist; the browser suite now asserts the reset state, so the pixels and the docs have one source of truth.
 - **Suggestion:** for demo-driven projects, assert the narrated UI state in a test — a runbook is a test written in prose, and prose does not fail CI.
 
+### 22. A cold CI runner found the race the warm laptop never could
+- **Tried:** let CI run the four-server end-to-end suite on every push.
+- **Happened:** one run went red — the negotiation said "Nobody could take the soccer run" **while its own feed showed two offers** (Park's swap and Chen's favour) sitting right there. On a cold runner the collect window (a few hundred ms) closed before the families' replies arrived; the decision was recorded as final, and every late reply was then ignored forever. Locally, warm, the replies always beat the window, so 30+ local runs never saw it.
+- **Expected:** an offer that arrives after the window is still an offer — being slow must not be the same as saying no.
+- **Workaround:** "no help yet" is now revisable: any reply that lands after that decision re-opens it, and the first acceptable offer becomes the proposal at once (strictly better than the "nobody can take it" the family already heard). Regression test added that forces the race with a 5 ms window and 60 ms deliveries.
+- **Suggestion:** for any collect-then-decide window in an agent protocol, treat the decision as a *snapshot*, not a tombstone — make late events able to revise it, and test on the slowest machine you can find. CI was that machine.
+

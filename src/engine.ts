@@ -484,14 +484,22 @@ export function createEngine(deps: EngineDeps) {
 
   function maybeSettleEarly(nid: string): void {
     const n = store.getNegotiation(nid)
-    if (!n || n.status !== 'negotiating') return
-    if (allResolved(nid)) void settle(nid, false)
+    if (!n || n.status === 'agreed' || n.status === 'declined') return
+    // While the collect window is open, only a full set of answers settles it
+    // early. After "no help yet" was said, the first offer to arrive is
+    // strictly better than that answer, so it becomes the proposal at once.
+    if (n.status === 'no_help_found' || allResolved(nid)) void settle(nid, false)
   }
 
   async function settle(nid: string, final: boolean): Promise<void> {
     const n = store.getNegotiation(nid)
     if (!n) return
-    if (n.status === 'agreed' || n.status === 'declined' || n.status === 'no_help_found') return
+    if (n.status === 'agreed' || n.status === 'declined') return
+    // "No help yet" is a verdict, not a tombstone: on a slow network (or a cold
+    // CI runner) a family's offer can land right after the collect window
+    // closes, and dropping it would lose the one thing the family is waiting
+    // for. A reply that arrives after that decision gets to revise it.
+    const conclusive = final || n.status === 'no_help_found'
     // A ready proposal — or a deal waiting on the other family — whose own
     // thread is still live is already the answer; nothing to re-settle.
     if (n.chosen_thread) {
@@ -510,7 +518,7 @@ export function createEngine(deps: EngineDeps) {
         pending = true
       }
     }
-    if (pending && !final) return
+    if (pending && !conclusive) return
     if (!candidates.length) {
       store.setNegotiation(nid, { status: 'no_help_found' })
       log('no help found', { negotiation: nid })

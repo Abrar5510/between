@@ -23,11 +23,12 @@ type Mesh = {
   engines: Record<string, Engine>
 }
 
-function makeMesh(knobs: { collectMs?: number } = {}): Mesh {
+function makeMesh(knobs: { collectMs?: number; deliverDelayMs?: number } = {}): Mesh {
   const clock = createClock(DEMO_NOW)
   const keys = Object.fromEntries(HOUSEHOLD_IDS.map(id => [id, generateKeyPair()]))
   const stores: Record<string, Store> = {}
   const engines: Record<string, Engine> = {}
+  const delayMs = knobs.deliverDelayMs ?? 0
 
   for (const id of HOUSEHOLD_IDS) {
     stores[id] = new Store()
@@ -67,7 +68,11 @@ function makeMesh(knobs: { collectMs?: number } = {}): Mesh {
           at: received.sentAt,
           delivered: 1,
         })
-        if (fresh) void engines[offer.to].onMessage(received)
+        if (fresh) {
+          // A cold runner delivers late: the demo must survive it.
+          if (delayMs) setTimeout(() => void engines[offer.to].onMessage(received), delayMs)
+          else void engines[offer.to].onMessage(received)
+        }
       },
       choose: rulesChooser(),
       now: clock.now,
@@ -264,4 +269,31 @@ test('find_help mistakes get a spoken next step, not tool errors', async () => {
   const wrongThing = await engines.ahmad.findHelp({ activity: 'piano', date: THURSDAY })
   assert.equal(wrongThing.ok, false)
   assert.match(wrongThing.summary, /I found no piano on Thursday. That day has: soccer run. Which one did you mean\?/)
+})
+
+test('an offer that lands after the collect window still becomes the proposal', async () => {
+  // The cold-runner race that turned a CI run red: the window closed at 5 ms,
+  // every reply arrived at 60 ms, and the negotiation was left saying "nobody
+  // could take it" while two offers sat in its own feed. "No help yet" has to
+  // be revisable, or a slow family's yes is thrown away.
+  const { stores, engines } = makeMesh({ collectMs: 5, deliverDelayMs: 60 })
+
+  const start = await engines.ahmad.findHelp({ activity: 'soccer run', date: THURSDAY })
+  assert.equal(start.kind, 'started')
+  const nid = start.negotiationId
+  assert.ok(nid, 'a started negotiation has an id')
+
+  await new Promise(resolve => setTimeout(resolve, 30))
+  assert.equal(stores.ahmad.getNegotiation(nid)?.status, 'no_help_found')
+
+  const proposal = await waitFor(() => {
+    const n = stores.ahmad.getNegotiation(nid)
+    return n?.status === 'proposal_ready' ? n : undefined
+  }, 'the late offer to become the proposal', 2000)
+
+  const chosen = proposal.chosen_thread ? stores.ahmad.getThread(proposal.chosen_thread) : undefined
+  assert.equal(chosen?.peer, 'park', 'the Lees declined; the Parks swap wins the ranking')
+  const status = engines.ahmad.negotiationStatus(nid)
+  assert.equal(status.kind, 'proposal')
+  assert.match(status.summary, /Parks can cover/)
 })

@@ -107,7 +107,7 @@ AWS Builder is the alternative if the agents run on AgentCore or Strands. A sing
 |---|---|---|
 | Oct 10–11 | Spikes: hello-world MCP server toward Alexa+; a two-agent negotiation in the terminal; friction log started | The Alexa+ developer preview turned out to be account-gated and US-only, so the simulator became the device story — friction log, entries 1–9 |
 | Oct 12–16 | Offer protocol, signing, negotiation engine, tests | Built and tested in one block on Oct 17 |
-| Oct 17 | MCP tools, approval flow, ledger, the app views, the simulated homes, browser verification, the hosted link, public repos | Done the same day: 28 checks green, both repos public, one link live |
+| Oct 17 | MCP tools, approval flow, ledger, the app views, the simulated homes, browser verification, the hosted link, public repos | Done the same day: 29 checks green, both repos public, one link live |
 | Oct 18–22 | Product feedback, friction log, video, submission | Feedback text and the friction log are written; the video and the Devpost form are the remaining human steps |
 
 ## Risks
@@ -186,7 +186,7 @@ device would; the honest table is in the README.
 **Built with.** Node 24 (TypeScript, no build step for the server), MCP SDK
 (server/client/express/node), `@modelcontextprotocol/ext-apps` (App +
 AppBridge), Express, SQLite via `node:sqlite`, Zod, Vite, Ed25519 via
-`node:crypto`; Claude on Amazon Bedrock as an optional chooser; 28 checks across
+`node:crypto`; Claude on Amazon Bedrock as an optional chooser; 29 checks across
 protocol, engine, MCP surface, failure drills, four-server end-to-end, the full
 spoken demo, and two real-browser suites driving both kitchens.
 

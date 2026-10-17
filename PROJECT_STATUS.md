@@ -4,7 +4,7 @@
 **Event:** Build, Ship, Shape: Amazon Developer Hackathon — Alexa+ track, Open Source mini challenge
 **Status date:** Saturday, Oct 17, 2026, evening PKT — the build is finished, browser-verified, published and hosted
 **Hard deadline:** Friday, Oct 23, 2026, 12:00 PM PT = Saturday, Oct 24, 00:00 local
-**Companion documents:** `README.md` (public), `docs/between.md` (product spec + Devpost description), `docs/demo-runbook.md` (recording runbook + hosting), `docs/product-feedback.md` (mandatory Devpost feedback), `FRICTION_LOG.md` (21 entries, bonus evidence), `packages/protocol/SPEC.md` (the wire protocol)
+**Companion documents:** `README.md` (public), `docs/between.md` (product spec + Devpost description), `docs/demo-runbook.md` (recording runbook + hosting), `docs/product-feedback.md` (mandatory Devpost feedback), `FRICTION_LOG.md` (22 entries, bonus evidence), `packages/protocol/SPEC.md` (the wire protocol)
 
 ---
 
@@ -12,11 +12,11 @@
 
 **Where it stands, in one line:** the whole thing is built, tested, published and reachable — four households negotiate and settle a real swap over signed HTTP across four real servers, two real browsers drive both kitchens, and one public ngrok link serves the same demo to judges.
 
-**Verified now (28 checks, all green):**
+**Verified now (29 checks, all green):**
 
 | Check | Command | Result |
 |---|---|---|
-| Protocol + engine + MCP + drills | `npm test` | **23/23** (10 protocol, 4 MCP surface, 6 engine, 3 failure drills) |
+| Protocol + engine + MCP + drills | `npm test` | **24/24** (10 protocol, 4 MCP surface, 7 engine, 3 failure drills) |
 | End to end, four real servers | `npm run e2e` | **3/3** — the demo over signed HTTP, restart persistence, the demo by voice turns |
 | Both kitchens in Chromium | `npm run ui` | **1/1** — the real MCP App through the app bridge, card buttons negotiating, panels, reset |
 | The hosted front door in Chromium | `npm run hosted` | **1/1** — the same, served under `/ahmad/…` and `/park/…` behind one link |
@@ -43,7 +43,7 @@
 | **Household server** | `src/main.ts` (+ `config.ts`, `dates.ts`, `keys.ts`) | **Done.** Streamable HTTP `/mcp` with bearer auth; `/peer/offers` with raw-body signature verification; `/api/state`, `/api/reset`; `/sim/*`; passcode gate; demo clock (`DEMO_NOW`) |
 | **Storage** | `src/db.ts` | **Done.** SQLite (one file per household); UNIQUE(thread, delta) makes commits idempotent |
 | **Demo seed** | `src/seed.ts` | **Done.** Four households on a fixed clock: Ahmad's Thursday soccer (the need), Park's Tuesday run and Chen's Sunday swim (tradeable), Lee busy, the Lee ledger story, prefs |
-| **Negotiation engine** | `src/engine.ts` | **Done.** Fan-out by who owes you; plain-yes-vs-swap ranking; next-move protocol; collect window; two-sided approval; idempotent commit; sweep/expiry; every outcome a speakable sentence; approval results carry the proposal terms so cards keep them |
+| **Negotiation engine** | `src/engine.ts` | **Done.** Fan-out by who owes you; plain-yes-vs-swap ranking; next-move protocol; collect window; two-sided approval; idempotent commit; sweep/expiry; every outcome a speakable sentence; approval results carry the proposal terms so cards keep them; a reply that lands after the collect window revives a "no help yet" into the proposal |
 | **Chooser** | `src/chooser.ts` | **Done.** `rules` (default) and `claude` (Bedrock, timeout + rules fallback). Only ranks engine-generated legal moves |
 | **Peer transport** | `src/peer.ts` | **Done.** Seal, log, POST, outbox retry, verified receive, replay protection |
 | **MCP surface** | `src/mcp.ts` | **Done.** Four tools with output schemas, speakable summaries, the `ui://` app resource; `respond_to_proposal` returns the proposal terms |
@@ -118,7 +118,7 @@
 - [ ] Demo video < 3 min, public, English, MCP code visible — runbook ready
 - [x] Text description — `docs/between.md`, repo links filled in
 - [x] Product feedback for every tool/API/SDK — `docs/product-feedback.md` (mandatory)
-- [x] Friction log and feature requests — `FRICTION_LOG.md`, 21 entries (bonus)
+- [x] Friction log and feature requests — `FRICTION_LOG.md`, 22 entries (bonus)
 - [ ] Open Source mini challenge fields: repo URL, contribution URL, GitHub username, description
 - [x] README states the project was built from Oct 10, 2026
 

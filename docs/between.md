@@ -131,12 +131,65 @@ AWS Builder is the alternative if the agents run on AgentCore or Strands. A sing
 4. **Buildable by Oct 23:** yes at the scope above, if the day-1 spikes pass.
 5. **Mini challenge without bloat:** yes. The protocol library is code the project needs anyway.
 
-## Devpost description (draft)
+## Devpost description (final — paste-ready)
 
-- **One-line pitch:** Your Alexa negotiates with other families' Alexas to sort out who does what, without anyone sharing a calendar.
-- **The problem:** Coordinating between households runs on group texts and guilt. Assistants serve one home and cannot talk to the next.
-- **What it does:** Ask for help once. Your agent negotiates a trade with trusted families' agents and brings back one proposal. Both families approve by voice, both calendars update, and a ledger keeps favours even over time.
-- **How it works:** One self-hosted MCP server per household (spec 2025-11-25, Streamable HTTP). Servers exchange signed offers over HTTP. Each agent decides using only its own family's calendar, preferences and ledger. An MCP App shows the proposal and the negotiation feed.
-- **Why it's creative:** An agentic workflow across households, with state across sessions and an MCP App. The agent brokers between people instead of serving one.
-- **What's new during the window:** Everything. Started Oct 10, 2026.
-- **Open-source plan:** MIT license. Main repo plus the negotiation protocol as its own library. URLs to add.
+**One-line pitch:** Your Alexa negotiates with other families' Alexas to sort
+out who does what, without anyone sharing a calendar.
+
+**Inspiration.** Coordinating between households runs on group texts and guilt:
+"can anyone do Thursday?" — forty messages, one parent folds. Assistants serve
+one home and cannot talk to the next. We gave each home an assistant that owns
+exactly this job.
+
+**What it does.** Ask once — *"I can't take Maya to soccer on Thursday. Can you
+sort it out?"* Your assistant negotiates with the families you trust, brings
+back exactly one offer, and neither family is committed until both say yes out
+loud. A favour ledger keeps the books even across weeks, so the family who
+covers this month gets covered next month.
+
+**How it works.** Every household runs its own MCP server over Streamable HTTP.
+The assistant surface is four MCP tools — `find_help`, `negotiation_status`,
+`respond_to_proposal`, `ledger` — plus a `ui://` app resource that renders a
+negotiation feed, the proposal card (with working Yes/No buttons that call back
+into the server), the settled card and the ledger.
+
+Households talk only in **offers**: a strict-schema, Ed25519-signed message
+containing a task label, a start time, a duration, and what's wanted in return.
+Unknown fields are a hard error, so a compromised agent cannot smuggle a
+calendar entry. At most three counters per thread, every offer expires, and
+nothing is committed until both families approve. The engine only ever builds
+moves from slots its own calendar shows as free; the optional Claude-on-Bedrock
+chooser ranks those legal moves and can be wrong without ever being unsafe.
+
+**The demo.** Two simulated Alexa+ homes side by side. Ahmad asks; the Lees
+decline (and their calendar stays theirs); the Parks counter with a swap; the
+Chens offer a plain favour; the ledger decides who's asked first. One card in
+each kitchen: *they take Thursday, you take Tuesday.* Both families say yes.
+Both calendars move, both ledgers stay even, and the wire panel shows every byte
+that crossed between the houses — signed offers only, no titles, no names, no
+locations.
+
+**What's new during the window.** Everything. The repository's first commit is
+dated Oct 10, 2026.
+
+**How much is real.** The MCP server, the tools, the app view, the protocol,
+the signatures, the engine, the tests and the four-server end-to-end suite are
+all real; the Alexa+ device itself is simulated in a web page (development-stage
+add-ons are visible only to the developer's own account, so a second household
+cannot be tested on hardware). The simulator drives the same MCP server a real
+device would; the honest table is in the README.
+
+**Open source.** MIT. Two public repositories:
+
+- **Main project** — the household server, the MCP tools, the app, the
+  simulator: `TODO github.com/Abrar5510/between`
+- **The protocol, on its own** — `between-protocol` on npm, with `SPEC.md`,
+  a generated JSON Schema and tests: `TODO github.com/Abrar5510/between-protocol`
+
+**Built with.** Node 24 (TypeScript, no build step for the server), MCP SDK
+(server/client/express/node), `@modelcontextprotocol/ext-apps` (App +
+AppBridge), Express, SQLite via `node:sqlite`, Zod, Vite, Ed25519 via
+`node:crypto`; Claude on Amazon Bedrock as an optional chooser; 26 tests across
+protocol, engine, MCP surface, failure drills, four-server end-to-end and the
+full spoken demo.
+

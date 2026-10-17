@@ -18,6 +18,9 @@
     "test": "node --import tsx --test 'test/*.test.ts'",
     "example": "tsx examples/two-agents.ts"
   },
+  "devDependencies": {
+    "tsx": "^4"
+  },
   "keywords": [
     "agents",
     "protocol",

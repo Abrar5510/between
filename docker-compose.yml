@@ -1,0 +1,32 @@
+# Between — the four homes, one command.
+#
+#   docker compose up --build
+#
+# Ahmad:  http://localhost:4001/sim/
+# Park:   http://localhost:4002/sim/
+# Lee:    http://localhost:4003/sim/
+# Chen:   http://localhost:4004/sim/
+#
+# Every restart reseeds all four households to the same Saturday morning.
+# The data volume keeps the shared keys; the databases are wiped on boot.
+
+services:
+  between:
+    build: .
+    ports:
+      - "4001:4001"
+      - "4002:4002"
+      - "4003:4003"
+      - "4004:4004"
+    environment:
+      # Pin "today" so seeds, tests and recordings are reproducible.
+      DEMO_NOW: 2026-10-17T09:00:00-07:00
+      # 1200 ms between agent replies reads well on camera; 0 is snappier.
+      PACE_MS: "1200"
+    volumes:
+      # Keys live here (generated once); the demo databases are reset on boot.
+      - between-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  between-data:

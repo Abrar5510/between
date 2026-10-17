@@ -1,0 +1,7 @@
+node_modules
+dist
+data
+.env*
+hackathon-*.md
+.git
+.github

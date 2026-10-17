@@ -1,13 +1,21 @@
 import assert from 'node:assert/strict'
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { once } from 'node:events'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { after, before, test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client'
 import { generateKeyPair } from 'between-protocol'
 import { HOUSEHOLD_IDS, HOUSEHOLDS } from '../src/config.ts'
+
+// The app resource serves the built view; on a fresh checkout, build it once.
+const APP_HTML = fileURLToPath(new URL('../dist/app/index.html', import.meta.url))
+if (!existsSync(APP_HTML)) {
+  const build = spawnSync('npm', ['run', 'build'], { stdio: 'ignore' })
+  if (build.status !== 0) throw new Error('the app view failed to build — run: npm run build')
+}
 
 const PORT = 4901
 const TOKEN = 'test-token'
@@ -99,6 +107,8 @@ test('the app resource serves the bundled view', async () => {
   const uri = (ledger._meta?.ui as { resourceUri: string }).resourceUri
   const { contents } = await client.readResource({ uri })
   assert.equal(contents[0].mimeType, 'text/html;profile=mcp-app')
-  assert.match((contents[0] as { text: string }).text, /<main id="root">/)
+  const html = (contents[0] as { text: string }).text
+  assert.match(html, /<main id="root">/)
+  assert.match(html, /<script/, 'the bundled view, not the pre-build placeholder')
   await client.close()
 })

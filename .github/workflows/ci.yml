@@ -22,11 +22,11 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Unit tests (protocol, engine, MCP surface)
-        run: npm test
-
       - name: Build the app view and the simulator page
         run: npm run build
+
+      - name: Unit tests (protocol, engine, MCP surface, failure drills)
+        run: npm test
 
       - name: End-to-end (four servers, signed offers, the demo scenario)
         run: npm run e2e

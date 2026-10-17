@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { RESOURCE_MIME_TYPE, registerAppResource, registerAppTool } from '@modelcontextprotocol/ext-apps/server'
 import { McpServer } from '@modelcontextprotocol/server'
 import { z } from 'zod'
@@ -6,6 +6,24 @@ import type { Engine } from './engine.ts'
 
 const APP_URI = 'ui://between/app.html'
 const APP_HTML = new URL('../dist/app/index.html', import.meta.url)
+
+/**
+ * The built view, cached. A server started before the first `npm run build`
+ * serves a friendly placeholder card instead of failing the resource read.
+ */
+let appView: string | undefined
+function appHtml(): string {
+  appView ??= existsSync(APP_HTML)
+    ? readFileSync(APP_HTML, 'utf8')
+    : [
+        '<!doctype html><html><body>',
+        '<main id="root">',
+        '<h1>Between</h1>',
+        '<p>The app view has not been built yet. Run <code>npm run build</code>, then reopen this card.</p>',
+        '</main></body></html>',
+      ].join('')
+  return appView
+}
 
 const FeedItem = z.object({
   at: z.string(),
@@ -200,7 +218,7 @@ export function createMcpServer(engine: Engine): McpServer {
     APP_URI,
     { description: 'Negotiation feed, proposal card, agreed view and favour ledger.' },
     async () => ({
-      contents: [{ uri: APP_URI, mimeType: RESOURCE_MIME_TYPE, text: readFileSync(APP_HTML, 'utf8') }],
+      contents: [{ uri: APP_URI, mimeType: RESOURCE_MIME_TYPE, text: appHtml() }],
     }),
   )
 

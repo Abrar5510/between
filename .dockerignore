@@ -2,6 +2,6 @@ node_modules
 dist
 data
 .env*
-hackathon-*.md
+notes/
 .git
 .github

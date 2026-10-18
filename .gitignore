@@ -5,6 +5,6 @@ data/
 !.env.example
 .DS_Store
 
-# private ideation notes
-hackathon-*.md
+# private working notes
+notes/
 .claude/

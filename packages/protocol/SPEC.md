@@ -1,9 +1,9 @@
-# Between wire protocol — v1
+# Between Wire Protocol, Version 1
 
-This is the normative description of what crosses between two household
-servers. It is short on purpose: the whole point is that a family's assistant
-cannot say anything except *"cover this slot, I'll give you this in return"*,
-*"yes"*, *"no"*, or *"here's a different deal"*.
+This document is the normative description of the messages exchanged between two household
+servers. It is deliberately concise: a household's assistant can express only *"cover this
+slot and I will take this one in return"*, *"yes"*, *"no"* or *"here is a different
+proposal"*.
 
 The implementation lives in `src/` (Zod schema, signing, thread state machine);
 `offer.schema.json` is generated from the same schema by
@@ -26,12 +26,12 @@ between-signature: <base64url Ed25519 signature>
   the bytes they received, before parsing.
 - `between-key-id` must equal the offer's `from` field; otherwise the receiver
   rejects with `sender_mismatch`.
-- Public keys are exchanged out of band (in Between, they are pasted into each
-  household's peer list) and are never trusted from the wire.
+- Public keys are exchanged out of band (in Between, they are entered in each
+  household's peer list) and are never accepted from the wire.
 - Responses: `200 {"ok":true}` on acceptance, `200 {"ok":true,"duplicate":true}`
   for an offer already seen, `400 {"error":"<code>"}` otherwise, `413` for
-  bodies over 4 KiB. A receiver must not disclose *why* it doesn't know a
-  sender beyond `unknown_sender`.
+  bodies over 4 KiB. A receiver must not disclose why a sender is unknown
+  beyond the code `unknown_sender`.
 
 ## 2. Envelope
 
@@ -47,8 +47,8 @@ Every offer carries:
 | `sentAt` | instant | ISO 8601 with UTC offset |
 | `expires` | instant | after this, the offer is void |
 
-`id` is the primary replay key; `expires` plus a ±5 minute `sentAt` window is
-the second line of defence.
+`id` is the primary replay key; `expires`, together with a ±5-minute window on `sentAt`,
+provides a second line of defence.
 
 Ids match `^[A-Za-z0-9_-]{1,64}$`. Instants are ISO 8601 timestamps **with an
 offset** (`2026-10-22T16:00:00-07:00`); a bare `Z` is also an offset.
@@ -82,10 +82,9 @@ Terms are always expressed **from the thread initiator's side**:
 | `accept` | `ref` | approves the standing offer whose id is `ref` |
 | `decline` | — | ends the thread |
 
-Because terms are relative to the initiator, a `counter` never re-states whose
-run it is talking about — each side reads `ask` and `give` through its own role.
-This is what makes the two sides' plain-language summaries differ without any
-extra fields.
+Because terms are expressed relative to the initiator, a `counter` never restates which
+household a slot belongs to; each party interprets `ask` and `give` according to its own role.
+This allows the two parties' plain-language summaries to differ without additional fields.
 
 ## 5. Thread state machine
 
@@ -101,10 +100,10 @@ State: `{ id, initiator, responder, status, standing, counters, acceptedBy }`.
 | any live | `step` after `standing.expires` | `expired` |
 
 - **Two-sided approval is mandatory.** `agreed` requires an `accept` from both
-  parties, both referencing the current standing offer. A commitment only
-  happens after both families' humans have said yes.
+  parties, both referencing the current standing offer. A commitment is made only
+  after a person in each household has approved it.
 - **`MAX_COUNTERS = 3`.** After that, only `accept` or `decline` is valid.
-- `accept` is valid in `open` too — a plain yes to a swap proposal.
+- `accept` is also valid in `open`, as a direct acceptance of a swap proposal.
 
 ## 6. Rejections
 
@@ -123,10 +122,11 @@ end of the negotiation.
 
 ## 7. Cryptography
 
-- Ed25519, `@noble`-free: Node's `node:crypto` `sign`/`verify` with `null`
-  algorithm (Ed25519 needs no hash choice).
+- Ed25519, using `sign` and `verify` from Node's `node:crypto` with a `null`
+  algorithm (Ed25519 requires no separate hash selection); no third-party
+  cryptography library is used.
 - Keys: SPKI (public) and PKCS#8 (private), DER, base64url.
-- The signature is over the exact serialized body — senders must not re-serialize.
+- The signature covers the exact serialised body; senders must not re-serialise it.
 - Clock skew allowance: ±5 minutes between `sentAt` and the receiver's clock.
 - Replay: `id` must be unique per sender; receivers keep seen ids. Expiry caps
   the replay window even without persistent storage.
@@ -139,15 +139,15 @@ On the wire, the only information about a household is:
   the timing of its messages.
 
 It never includes calendar event titles, participants, locations, notes,
-preferences, addresses, or free-form text. The wire log in Between's demo is the
-receipt: every message shown there is a schema-valid offer.
+preferences, addresses or free-form text. The wire log in the Between demonstration
+serves as evidence: every message shown there is a schema-valid offer.
 
 ## 9. Versioning
 
 `v` is a required literal (`1`). All objects are *strict*: unknown properties
 are rejected. A future version therefore cannot be silently half-understood —
-an old server rejects it, and the families simply have no negotiation instead
-of a wrong one.
+an older server rejects it, and the households have no negotiation rather than an
+incorrect one.
 
 ## 10. Tests
 

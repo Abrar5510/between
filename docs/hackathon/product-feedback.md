@@ -147,8 +147,9 @@ timeout. The code path is implemented, type-checked and shipped behind `CHOOSER=
 
 - **Bedrock access could not be obtained within the hackathon period.** A new AWS account must
   be created, verified with a payment card and granted model access per region manually, and
-  the hackathon's AWS credits form closes two days before the submission deadline. For a
-  13-day build, obtaining AWS access before starting development is not a realistic sequence.
+  the hackathon's AWS credits ran out on 7 October, two weeks before the published request
+  deadline of 21 October. For a 13-day build, obtaining AWS access before starting development
+  is not a realistic sequence.
   The project shipped a deterministic fallback instead.
 - **The `effort` parameter is nested more deeply than expected.** Passing `effort: 'low'` at the
   top level of `messages.create` produces "No overload matches this call" with no field-level
@@ -160,7 +161,7 @@ timeout. The code path is implemented, type-checked and shipped behind `CHOOSER=
 **Recommendations**
 
 1. Issue scope-limited sandbox credentials at hackathon registration with the required models
-   pre-approved, or move the credits deadline after the submission deadline.
+   pre-approved, and size the credit pool so that credits last until the published deadline.
 2. Document `output_config.effort` in the Bedrock quickstart alongside `model`.
 3. Report a field-level error (for example, "`effort` is not a top-level parameter; did you mean
    `output_config.effort`?") instead of a generic overload error.

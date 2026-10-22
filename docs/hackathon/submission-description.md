@@ -74,7 +74,8 @@ Released under the MIT Licence in two public repositories:
 
 Node.js 24 (TypeScript, with no build step for the server); the MCP SDK (server, client,
 express and node packages); `@modelcontextprotocol/ext-apps` (App and AppBridge); Express;
-SQLite via `node:sqlite`; Zod; Vite; Ed25519 via `node:crypto`; and, optionally, Claude on
-Amazon Bedrock as the move chooser. The project is verified by 29 automated checks covering the
+SQLite via `node:sqlite`; Zod; Vite; and Ed25519 via `node:crypto`. A Claude-on-Bedrock move
+chooser is implemented behind `CHOOSER=claude` but was not enabled for the demonstration, because
+Bedrock access could not be obtained in time; the deterministic rules chooser runs instead. The project is verified by 29 automated checks covering the
 protocol, engine, MCP interface, failure modes, a four-server end-to-end run, the complete
 spoken demonstration, and two browser suites that drive both households.

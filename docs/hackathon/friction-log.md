@@ -166,15 +166,19 @@ result, the workaround adopted and a recommendation.
 - **Attempted:** to run a Claude model on Bedrock for the demonstration's move chooser, a
   component emphasised in the judging criteria.
 - **Observed:** a new AWS account must be created, verified with a payment card and granted
-  model access per region manually. The hackathon's AWS credits form closes **two days before**
-  the submission deadline, and support initiates a multi-day manual approval process. As a
-  result, the one required cloud dependency could not be enabled within the hackathon period.
+  model access per region manually. The hackathon's AWS credits ran out on **7 October**, sixteen
+  days before the submission deadline and two weeks before the published request deadline of
+  21 October; the resources page states that credit requests are no longer accepted. Without
+  credits, Bedrock access depends on a personal paid account and a multi-day manual approval
+  process. As a result, the one required cloud dependency could not be enabled within the
+  hackathon period.
 - **Workaround:** ship the feature behind `CHOOSER=claude`, with a deterministic rules-based
   chooser as the default. The code path is implemented and type-checked; only the credentials
   are missing.
 - **Recommendation:** for time-limited hackathons, issue scoped sandbox credentials at
-  registration with the required model pre-approved, or set the credits deadline after the
-  submission deadline.
+  registration with the required model pre-approved, size the credit pool to the number of
+  registrants, and announce on the hackathon page when credits run out rather than only on the
+  resources page.
 
 ### 16. The `@modelcontextprotocol/ext-apps` host bridge is documented only in type definitions
 

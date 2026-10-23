@@ -111,7 +111,10 @@ bridge.oncalltool = async params => {
     structuredContent: last?.structuredContent as Record<string, unknown> | undefined,
   }
 }
-void bridge.connect(new PostMessageTransport(iframe.contentWindow!, iframe.contentWindow!))
+// The view sends its handshake once, on load, so it loads only after the bridge is listening.
+void bridge.connect(new PostMessageTransport(iframe.contentWindow!, iframe.contentWindow!)).then(() => {
+  iframe.src = 'app.html'
+})
 
 // ── the device: speech in, speech out ──────────────────────────────────────
 

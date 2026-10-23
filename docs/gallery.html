@@ -1,0 +1,126 @@
+<title>Between Gallery</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a short header, the demo film, then the stills in story order on a contact-sheet grid. */
+  :root {
+    --bg: #f3f4f7; --surface: #ffffff; --fg: #141821; --muted: #5d6676;
+    --line: #dde1e8; --accent: #3f6fd8; --ok: #2f8f5b;
+    --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0b0e13; --surface: #131821; --fg: #e8ecf2; --muted: #8e98a9;
+    --line: #232b37; --accent: #7aa2ff; --ok: #5fcf8f; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #0b0e13; --surface: #131821; --fg: #e8ecf2; --muted: #8e98a9;
+    --line: #232b37; --accent: #7aa2ff; --ok: #5fcf8f; color-scheme: dark }
+
+  body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-block: 48px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: grid; gap: 40px; }
+  header { display: grid; gap: 10px; max-width: 68ch; }
+  .eyebrow { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 700 clamp(36px, 6vw, 60px)/1 var(--display); letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); font-size: 16px; }
+  h2 { font: 500 22px/1.2 var(--display); margin: 0; }
+  section { display: grid; gap: 16px; }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .sec-head span { font: 13px var(--mono); color: var(--muted); }
+
+  video { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; display: block; background: #000; border-radius: 10px; border: 1px solid var(--line); }
+
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); }
+  .grid.two { grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); }
+  figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+  figure button { all: unset; cursor: zoom-in; display: block; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+  figure button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  figure img { display: block; width: 100%; height: auto; transition: transform .25s ease; }
+  figure button:hover img { transform: scale(1.02); }
+  figcaption { display: grid; gap: 2px; }
+  figcaption b { font-weight: 500; }
+  figcaption small { color: var(--muted); font-size: 13.5px; }
+  .meta { display: flex; gap: 10px; align-items: center; font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .meta .who { color: var(--ok); }
+  .jump { all: unset; cursor: pointer; color: var(--accent); }
+  .jump:hover { text-decoration: underline; }
+  .jump:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+  dialog { padding: 0; border: 0; background: transparent; max-width: 96vw; max-height: 92vh; }
+  dialog::backdrop { background: rgb(5 7 10 / .88); }
+  dialog img { display: block; max-width: 96vw; max-height: 84vh; width: auto; height: auto; border-radius: 6px; }
+  dialog p { color: #e8ecf2; margin: 10px 2px 0; font-size: 14px; }
+  dialog form { position: fixed; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); }
+  dialog form button { font: 500 13px var(--mono); color: #e8ecf2; background: #232b37; border: 0; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { figure img { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Build, Ship, Shape · Alexa+ track</span>
+    <h1>Between, in pictures</h1>
+    <p>Two household assistants arrange cover for a soccer run by trading signed offers. Every still below comes from the 90-second demo run: the Ahmad kitchen on the left, the Park kitchen on the right, with the calendar, favour ledger and wire log beside each.</p>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>Demo film</h2><span>1:30 · 1920×1080</span></div>
+    <video id="film" src="between-demo.mp4" controls preload="metadata" poster="img/gallery/09-title.jpg"></video>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>The negotiation, step by step</h2><span>stills from the film</span></div>
+    <div class="grid" id="stills"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Hosted deployment</h2><span>1400×900 · captured at settlement</span></div>
+    <div class="grid two" id="hosted"></div>
+  </section>
+</div>
+
+<dialog id="lb"><form method="dialog"><button>Close · Esc</button></form><img alt=""><p></p></dialog>
+
+<script>
+  const STILLS = [
+    ['01-ask.jpg', 0.10, 'Ahmad', 'The ask', 'The Ahmads type the request once: “I can’t take Maya to soccer on Thursday.”'],
+    ['02-negotiating.jpg', 0.12, 'Ahmad', 'Fan-out', 'The assistant asks the Lees, the Parks and the Chens. The wire log starts filling with signed requests.'],
+    ['03-swap-proposal.jpg', 0.20, 'Ahmad', 'A favour swap', 'The Lees decline without a reason. The best move is a swap: the Parks take Thursday, the Ahmads take Tuesday.'],
+    ['04-waiting-on-park.jpg', 0.44, 'Both', 'Waiting for the other family', 'The Ahmads agree, but nothing is settled until the Parks say yes in their own kitchen.'],
+    ['05-settled.jpg', 0.52, 'Both', 'Settled', 'Both families approved. Both calendars move and the favour ledger records an even swap.'],
+    ['06-wire-log.jpg', 0.58, 'Ahmad', 'What crossed the house line', 'The Park counter-offer, opened: a task label, a time and a duration. No names, titles or addresses.'],
+    ['07-ledger.jpg', 1.09, 'Ahmad', 'Favour ledger', '“Who should I ask about Saturday?” The Lees owe two favours, so they go first.'],
+    ['08-code.jpg', 1.20, 'Code', 'Under the hood', 'The find_help MCP tool and the between-protocol offer schema, the only thing that crosses between houses.'],
+    ['09-title.jpg', 1.26, 'Close', 'Between', 'Four MCP tools, one signed protocol.'],
+  ];
+  const HOSTED = [
+    ['img/ahmad-kitchen.png', 'Ahmad household', 'The settled card, the calendar showing Park cover, and the wire log.'],
+    ['img/park-kitchen.png', 'Park household', 'The settled card from the Park side, with the Park ledger.'],
+  ];
+  const fmt = t => `${Math.floor(t)}:${String(Math.round((t % 1) * 100)).padStart(2, '0')}`;
+  const secs = t => Math.floor(t) * 60 + Math.round((t % 1) * 100);
+  const lb = document.getElementById('lb'), film = document.getElementById('film');
+
+  function figure(src, title, text, meta) {
+    const f = document.createElement('figure');
+    f.innerHTML = `<button type="button" aria-label="Enlarge: ${title}"><img loading="lazy" src="${src}" alt="${title}. ${text}"></button>
+      <figcaption>${meta ?? ''}<b>${title}</b><small>${text}</small></figcaption>`;
+    f.querySelector('button').onclick = () => {
+      lb.querySelector('img').src = src; lb.querySelector('img').alt = title;
+      lb.querySelector('p').textContent = `${title}. ${text}`; lb.showModal();
+    };
+    return f;
+  }
+  for (const [file, t, who, title, text] of STILLS) {
+    const f = figure('img/gallery/' + file, title, text,
+      `<span class="meta"><button type="button" class="jump" title="Play from here">▶ ${fmt(t)}</button><span class="who">${who}</span></span>`);
+    f.querySelector('.jump').onclick = () => {
+      film.currentTime = secs(t); film.scrollIntoView({ behavior: 'smooth', block: 'center' }); film.play().catch(() => {});
+    };
+    document.getElementById('stills').append(f);
+  }
+  for (const [src, title, text] of HOSTED) document.getElementById('hosted').append(figure(src, title, text));
+  lb.onclick = e => { if (e.target === lb) lb.close(); };
+</script>

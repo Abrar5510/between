@@ -277,10 +277,14 @@ function renderLedger(state: State) {
 
 function renderWire(state: State) {
   const list = $('wire')
+  // The list is rebuilt every poll; keep any entry the viewer opened open.
+  const open = new Set([...list.querySelectorAll<HTMLElement>('details[open]')].map(item => item.dataset.key))
   list.replaceChildren(
     ...state.wire.map(message => {
       const item = document.createElement('details')
       item.className = 'wire-item'
+      item.dataset.key = `${message.direction}:${String(message.body.id)}`
+      item.open = open.has(item.dataset.key)
       const summary = document.createElement('summary')
       const outgoing = message.direction === 'out'
       summary.append(
